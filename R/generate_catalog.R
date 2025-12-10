@@ -12,7 +12,7 @@ generate_catalog <- function(
 
   message("Generating catalog from ", directory)
 
-  csv_files <- fs::dir_ls(paste0(.datos_path, "\\", directory), glob="*.csv")
+  csv_files <- as.character(fs::dir_ls(file.path(.datos_path, directory), glob="*.csv"))
 
   csv_file_counter <- 0
   csv_file_total <- length(csv_files)
@@ -37,7 +37,7 @@ generate_catalog <- function(
       }
 
       csv_datos <- readr::read_csv(
-        .x,
+        as.character(.x),
         locale = readr::locale("es",
                                encoding = "latin1"),
         trim_ws=TRUE,
@@ -78,12 +78,15 @@ generate_catalog <- function(
     # some csvs do not contain FUENTE
     withoutfuente <- FALSE
 
-    if (csv_datos[4,1] != "DESCRIPCIÓN DE LAS UNIDADES") {
+    if (csv_datos[[4,1]] != "DESCRIPCIÓN DE LAS UNIDADES") {
       # some csvs contain only three headers, and then continue to having dates:
-      if (stringr::str_detect(csv_datos_procesado[4], "FUENTE") |  stringr::str_detect(csv_datos_procesado[5], "FUENTE")) {
+      if (
+        ( !is.na(csv_datos_procesado[[1]][4]) & stringr::str_detect(csv_datos_procesado[[1]][4], "FUENTE") ) |
+        ( !is.na(csv_datos_procesado[[1]][5]) & stringr::str_detect(csv_datos_procesado[[1]][5], "FUENTE") )
+        ) {
         offset_serie <- 1
         # cuando la tercera fila contiene una fecha
-        } else if(stringr::str_detect(csv_datos_procesado[[1]][4], "\\b\\d{4}\\b")) {
+        } else if( !is.na(csv_datos_procesado[[1]][4]) & stringr::str_detect(csv_datos_procesado[[1]][4], "\\b\\d{4}\\b")) {
         short_csv_format <- TRUE
       }
     } else {
