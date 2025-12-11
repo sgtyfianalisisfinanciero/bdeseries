@@ -8,7 +8,6 @@
 #' generate_full_catalog()
 #'
 generate_full_catalog <- function() {
-
   message("Generating full catalog...")
 
   # .datos_path <- gsub("/",

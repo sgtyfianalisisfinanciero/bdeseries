@@ -81,7 +81,7 @@ get_series <- function(codes,
                   stringr::str_replace("\\$", ".") |>
                   stringr::str_replace("\\%", ".")) %in% colnames(csv_datos)) {
               if(verbose) message("La serie ", .code, " no existe en ", .csv_fichero_path)
-              next
+              return(NULL)
             }
 
             csv_datos |>
@@ -176,7 +176,7 @@ get_series <- function(codes,
           error=function(cond) {
             message(paste0("Serie ", .code, " could not be retrieved."))
             message("Error: ", cond)
-            next
+            return(NULL)
           },
           final={})
 
@@ -193,6 +193,11 @@ get_series <- function(codes,
 
       if (nrow(.series) == 0 & empty_series_flag) {
         warning("Serie: ", .code, " is empty.")
+        return(NULL)
+      }
+
+      if (nrow(.series) == 0) {
+        warning("Serie: ", .code, " is empty (no data found in any file).")
         return(NULL)
       }
 
